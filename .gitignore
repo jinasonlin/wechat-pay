@@ -1,5 +1,6 @@
 .DS_Store
 test.js
+test.*.js
 node_modules
 example
 *.p12

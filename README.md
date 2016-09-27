@@ -31,13 +31,12 @@ payment.getBrandWCPayRequestParams(order, function(err, payargs){
 });
 ```
 
-注：
-1. 页面的路径需要位于`支付授权目录`下
-2. 由于每次呼出支付界面，无论用户是否支付成功，out_trade_no 都会失效（OUT_TRADE_NO_USED），所以这里使用timestamp保证每次的id不同。业务逻辑中应该自行维护之
+注：   
+1. 页面的路径需要位于`支付授权目录`下   
+2. 由于每次呼出支付界面，无论用户是否支付成功，out_trade_no 都会失效（OUT_TRADE_NO_USED），所以这里使用timestamp保证每次的id不同。业务逻辑中应该自行维护之   
 
 
-前端通过
-
+__前端通过__
 ```javascript
 WeixinJSBridge.invoke('getBrandWCPayRequest', payargs, function(res){
   if(res.err_msg == "get_brand_wcpay_request:ok"){
@@ -48,7 +47,7 @@ WeixinJSBridge.invoke('getBrandWCPayRequest', payargs, function(res){
   }
 });
 ```
-来呼出微信的支付界面
+来呼出微信的支付界面（JS-SDK http://mp.weixin.qq.com/wiki/11/74ad127cc054f6b80759c40f77ec03db.html#.E5.8F.91.E8.B5.B7.E4.B8.80.E4.B8.AA.E5.BE.AE.E4.BF.A1.E6.94.AF.E4.BB.98.E8.AF.B7.E6.B1.82）   
 
 ## 接收微信付款确认请求
 ```javascript
@@ -71,7 +70,6 @@ app.use('<notifyUrl>', middleware(initConfig, function(req, res, next) {
 ```
 
 ## 退个款
-
 ```javascript
 payment.refund({
   out_trade_no: "kfc001",
@@ -87,7 +85,6 @@ payment.refund({
 ```
 
 ## 查询历史订单
-
 ```javascript
 payment.downloadBill({
   bill_date: "20140913",
@@ -99,6 +96,59 @@ payment.downloadBill({
   var stat = data.stat;
 });
 ```
+
+## 红包
+```
+var RedPack = require('wechat-pay').RedPack;
+var initConfig = {
+  partnerKey: "<partnerkey>",
+  appId: "<appid>",
+  mchId: "<mchid>",
+  notifyUrl: "<notifyurl>",
+  pfx: fs.readFileSync("<location-of-your-apiclient-cert.p12>")
+};
+var redpack = new RedPack(initConfig);
+
+redpack.sendRedPack({
+  mch_billno: 'billno',
+  wxappid: 'appid',
+  send_name: 'name',
+  re_openid: 'openid',
+  total_amount: 40,
+  wishing: 'wishing',
+  act_name: '红包祝福语',
+  remark: '备注信息',
+  client_ip: '192.168.0.1'
+}, function (err, result) {
+  // todo
+});
+```
+
+## 企业付款
+```
+var Transfer = require('wechat-pay').Transfer;
+var initConfig = {
+  partnerKey: "<partnerkey>",
+  appId: "<appid>",
+  mchId: "<mchid>",
+  notifyUrl: "<notifyurl>",
+  pfx: fs.readFileSync("<location-of-your-apiclient-cert.p12>")
+};
+var transfer = new Transfer(initConfig);
+
+transfer.sendTransfer({
+  mch_appid: 'appid',
+  partner_trade_no: 'billno',
+  openid: 'openid',
+  amount: 100,
+  desc: 'desc',
+  spbill_create_ip: '192.168.0.1'
+}, function (err, result) {
+  // todo
+});
+```
+
+## TODO
 
 ## 错误处理
 
